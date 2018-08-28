@@ -157,6 +157,7 @@ int main(void)
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
 
+	printf("Duvitech 2018\r\n");
   /* USER CODE END 2 */
 
   /* Infinite loop */
