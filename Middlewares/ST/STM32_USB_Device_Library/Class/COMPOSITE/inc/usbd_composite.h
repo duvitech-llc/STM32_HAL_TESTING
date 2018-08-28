@@ -50,15 +50,7 @@
 #define USBD_MSC_INTERFACE_IDX 0x00
 #define USBD_CDC_INTERFACE_IDX 0x01
 
-#define MSC_EPIN_ADDR                								0x81U  /* EP1 for msc data IN */
-#define MSC_EPOUT_ADDR               								0x01U  /* EP1 for msc data OUT */
-
-#define CDC_IN_EP                                   0x82U  /* EP2 for msc data IN */
-#define CDC_OUT_EP                                  0x02U  /* EP2 for data OUT */
-#define CDC_CMD_EP                                  0x83U  /* EP3 for CDC commands */
-
-
-#define USB_COMPOSITE_CONFIG_DESC_SIZ       64
+#define USB_COMPOSITE_CONFIG_DESC_SIZ       9
 
 /**
   * @}

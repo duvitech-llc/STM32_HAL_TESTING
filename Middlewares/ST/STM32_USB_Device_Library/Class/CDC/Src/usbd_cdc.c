@@ -199,24 +199,25 @@ USBD_ClassTypeDef  USBD_CDC =
 /* USB CDC device Configuration Descriptor */
 __ALIGN_BEGIN uint8_t USBD_CDC_CfgHSDesc[USB_CDC_CONFIG_DESC_SIZ] __ALIGN_END =
 {
-  /*Configuration Descriptor*/
-  0x09,   /* bLength: Configuration Descriptor size */
-  USB_DESC_TYPE_CONFIGURATION,      /* bDescriptorType: Configuration */
-  USB_CDC_CONFIG_DESC_SIZ,                /* wTotalLength:no of returned bytes */
-  0x00,
-  0x02,   /* bNumInterfaces: 2 interface */
-  0x01,   /* bConfigurationValue: Configuration value */
-  0x00,   /* iConfiguration: Index of string descriptor describing the configuration */
-  0xC0,   /* bmAttributes: self powered */
-  0x32,   /* MaxPower 0 mA */
 
+	/* IAD */
+	
+	0x08,			/* bLength: IAD Descriptor size */
+	0x0B,			/* bDescriptorType     */
+	0x01,			/* bFirstInterface     */
+	0x02,			/* bInterfaceCount     */
+	0x02,			/* bFunctionClass     */
+	0x02,			/* bFunctionSubClass    */
+	0x02,			/* bFunctionProtocol    */
+	0x01,			/* iFunction       */
+	
   /*---------------------------------------------------------------------------*/
 
   /*Interface Descriptor */
   0x09,   /* bLength: Interface Descriptor size */
   USB_DESC_TYPE_INTERFACE,  /* bDescriptorType: Interface */
   /* Interface descriptor type */
-  0x00,   /* bInterfaceNumber: Number of Interface */
+  0x01,   /* bInterfaceNumber: Number of Interface */
   0x00,   /* bAlternateSetting: Alternate setting */
   0x01,   /* bNumEndpoints: One endpoints used */
   0x02,   /* bInterfaceClass: Communication Interface Class */
@@ -264,7 +265,7 @@ __ALIGN_BEGIN uint8_t USBD_CDC_CfgHSDesc[USB_CDC_CONFIG_DESC_SIZ] __ALIGN_END =
   /*Data class interface descriptor*/
   0x09,   /* bLength: Endpoint Descriptor size */
   USB_DESC_TYPE_INTERFACE,  /* bDescriptorType: */
-  0x01,   /* bInterfaceNumber: Number of Interface */
+  0x02,   /* bInterfaceNumber: Number of Interface */
   0x00,   /* bAlternateSetting: Alternate setting */
   0x02,   /* bNumEndpoints: Two endpoints used */
   0x0A,   /* bInterfaceClass: CDC */
@@ -295,16 +296,17 @@ __ALIGN_BEGIN uint8_t USBD_CDC_CfgHSDesc[USB_CDC_CONFIG_DESC_SIZ] __ALIGN_END =
 /* USB CDC device Configuration Descriptor */
 __ALIGN_BEGIN uint8_t USBD_CDC_CfgFSDesc[USB_CDC_CONFIG_DESC_SIZ] __ALIGN_END =
 {
-  /*Configuration Descriptor*/
-  0x09,   /* bLength: Configuration Descriptor size */
-  USB_DESC_TYPE_CONFIGURATION,      /* bDescriptorType: Configuration */
-  USB_CDC_CONFIG_DESC_SIZ,                /* wTotalLength:no of returned bytes */
-  0x00,
-  0x02,   /* bNumInterfaces: 2 interface */
-  0x01,   /* bConfigurationValue: Configuration value */
-  0x00,   /* iConfiguration: Index of string descriptor describing the configuration */
-  0xC0,   /* bmAttributes: self powered */
-  0x32,   /* MaxPower 0 mA */
+	/* IAD */
+	
+	0x08,			/* bLength: IAD Descriptor size */
+	0x0B,			/* bDescriptorType     */
+	0x01,			/* bFirstInterface     */
+	0x02,			/* bInterfaceCount     */
+	0x02,			/* bFunctionClass     */
+	0x02,			/* bFunctionSubClass    */
+	0x02,			/* bFunctionProtocol    */
+	0x01,			/* iFunction       */
+	
 
   /*---------------------------------------------------------------------------*/
 
@@ -389,16 +391,17 @@ __ALIGN_BEGIN uint8_t USBD_CDC_CfgFSDesc[USB_CDC_CONFIG_DESC_SIZ] __ALIGN_END =
 
 __ALIGN_BEGIN uint8_t USBD_CDC_OtherSpeedCfgDesc[USB_CDC_CONFIG_DESC_SIZ] __ALIGN_END =
 {
-  0x09,   /* bLength: Configuation Descriptor size */
-  USB_DESC_TYPE_OTHER_SPEED_CONFIGURATION,
-  USB_CDC_CONFIG_DESC_SIZ,
-  0x00,
-  0x02,   /* bNumInterfaces: 2 interfaces */
-  0x01,   /* bConfigurationValue: */
-  0x04,   /* iConfiguration: */
-  0xC0,   /* bmAttributes: */
-  0x32,   /* MaxPower 100 mA */
-
+	/* IAD */
+	
+	0x08,			/* bLength: IAD Descriptor size */
+	0x0B,			/* bDescriptorType     */
+	0x01,			/* bFirstInterface     */
+	0x02,			/* bInterfaceCount     */
+	0x02,			/* bFunctionClass     */
+	0x02,			/* bFunctionSubClass    */
+	0x02,			/* bFunctionProtocol    */
+	0x01,			/* iFunction       */
+	
   /*Interface Descriptor */
   0x09,   /* bLength: Interface Descriptor size */
   USB_DESC_TYPE_INTERFACE,  /* bDescriptorType: Interface */
@@ -787,6 +790,19 @@ static uint8_t  *USBD_CDC_GetFSCfgDesc (uint16_t *length)
 {
   *length = sizeof (USBD_CDC_CfgFSDesc);
   return USBD_CDC_CfgFSDesc;
+}
+
+/**
+  * @brief  USBD_CDC_GetHSCfgDesc
+  *         Return configuration descriptor
+  * @param  speed : current device speed
+  * @param  length : pointer data length
+  * @retval pointer to descriptor buffer
+  */
+uint8_t  *CDC_GetCfgDesc (uint16_t *length)
+{
+  *length = sizeof (USBD_CDC_CfgHSDesc);
+  return USBD_CDC_CfgHSDesc;
 }
 
 /**

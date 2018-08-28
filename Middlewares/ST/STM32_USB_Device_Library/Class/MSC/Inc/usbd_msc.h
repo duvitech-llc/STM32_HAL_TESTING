@@ -79,7 +79,7 @@
 
 #define BOT_GET_MAX_LUN              0xFE
 #define BOT_RESET                    0xFF
-#define USB_MSC_CONFIG_DESC_SIZ      32
+#define USB_MSC_CONFIG_DESC_SIZ      23
 
 
 #define MSC_EPIN_ADDR                0x81U /* EP2 for data IN */
@@ -133,6 +133,7 @@ USBD_MSC_BOT_HandleTypeDef;
 extern USBD_ClassTypeDef  USBD_MSC;
 #define USBD_MSC_CLASS    &USBD_MSC
 
+uint8_t  *MSC_GetCfgDesc (uint16_t *length);
 uint8_t  USBD_MSC_RegisterStorage  (USBD_HandleTypeDef   *pdev,
                                     USBD_StorageTypeDef *fops);
 /**

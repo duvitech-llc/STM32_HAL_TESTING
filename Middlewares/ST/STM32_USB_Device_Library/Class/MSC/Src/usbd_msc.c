@@ -164,17 +164,6 @@ USBD_ClassTypeDef  USBD_MSC =
 __ALIGN_BEGIN uint8_t USBD_MSC_CfgHSDesc[USB_MSC_CONFIG_DESC_SIZ]  __ALIGN_END =
 {
 
-  0x09,   /* bLength: Configuation Descriptor size */
-  USB_DESC_TYPE_CONFIGURATION,   /* bDescriptorType: Configuration */
-  USB_MSC_CONFIG_DESC_SIZ,
-
-  0x00,
-  0x01,   /* bNumInterfaces: 1 interface */
-  0x01,   /* bConfigurationValue: */
-  0x04,   /* iConfiguration: */
-  0xC0,   /* bmAttributes: */
-  0x32,   /* MaxPower 100 mA */
-
   /********************  Mass Storage interface ********************/
   0x09,   /* bLength: Interface Descriptor size */
   0x04,   /* bDescriptorType: */
@@ -208,17 +197,6 @@ __ALIGN_BEGIN uint8_t USBD_MSC_CfgHSDesc[USB_MSC_CONFIG_DESC_SIZ]  __ALIGN_END =
 uint8_t USBD_MSC_CfgFSDesc[USB_MSC_CONFIG_DESC_SIZ]  __ALIGN_END =
 {
 
-  0x09,   /* bLength: Configuation Descriptor size */
-  USB_DESC_TYPE_CONFIGURATION,   /* bDescriptorType: Configuration */
-  USB_MSC_CONFIG_DESC_SIZ,
-
-  0x00,
-  0x01,   /* bNumInterfaces: 1 interface */
-  0x01,   /* bConfigurationValue: */
-  0x04,   /* iConfiguration: */
-  0xC0,   /* bmAttributes: */
-  0x32,   /* MaxPower 100 mA */
-
   /********************  Mass Storage interface ********************/
   0x09,   /* bLength: Interface Descriptor size */
   0x04,   /* bDescriptorType: */
@@ -249,18 +227,6 @@ uint8_t USBD_MSC_CfgFSDesc[USB_MSC_CONFIG_DESC_SIZ]  __ALIGN_END =
 
 __ALIGN_BEGIN uint8_t USBD_MSC_OtherSpeedCfgDesc[USB_MSC_CONFIG_DESC_SIZ]   __ALIGN_END  =
 {
-
-  0x09,   /* bLength: Configuation Descriptor size */
-  USB_DESC_TYPE_OTHER_SPEED_CONFIGURATION,
-  USB_MSC_CONFIG_DESC_SIZ,
-
-  0x00,
-  0x01,   /* bNumInterfaces: 1 interface */
-  0x01,   /* bConfigurationValue: */
-  0x04,   /* iConfiguration: */
-  0xC0,   /* bmAttributes: */
-  0x32,   /* MaxPower 100 mA */
-
   /********************  Mass Storage interface ********************/
   0x09,   /* bLength: Interface Descriptor size */
   0x04,   /* bDescriptorType: */
@@ -576,6 +542,13 @@ uint8_t  *USBD_MSC_GetHSCfgDesc (uint16_t *length)
 {
   *length = sizeof (USBD_MSC_CfgHSDesc);
   return USBD_MSC_CfgHSDesc;
+}
+
+uint8_t  *MSC_GetCfgDesc (uint16_t *length){
+	
+  *length = sizeof (USBD_MSC_CfgHSDesc);
+  return USBD_MSC_CfgHSDesc;
+	
 }
 
 /**
