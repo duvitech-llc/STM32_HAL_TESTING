@@ -396,8 +396,15 @@ USBD_StatusTypeDef USBD_LL_Init(USBD_HandleTypeDef *pdev)
   }
 
   HAL_PCDEx_SetRxFiFo(&hpcd_USB_OTG_HS, 0x200);
+	// EP0
   HAL_PCDEx_SetTxFiFo(&hpcd_USB_OTG_HS, 0, 0x80);
-  HAL_PCDEx_SetTxFiFo(&hpcd_USB_OTG_HS, 1, 0x174);
+  // MSC_IN_EP
+  HAL_PCDEx_SetTxFiFo(&hpcd_USB_OTG_HS, 1, 0x200);
+  // CDC_IN_EP
+  HAL_PCDEx_SetTxFiFo(&hpcd_USB_OTG_HS, 2, 0x80);
+  // CDC_CMD_IN_EP
+  HAL_PCDEx_SetTxFiFo(&hpcd_USB_OTG_HS, 3, 0x80);
+	
   }
   return USBD_OK;
 }
