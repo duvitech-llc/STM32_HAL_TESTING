@@ -123,6 +123,12 @@ static uint16_t usbd_composite_CfgDesc_len = 0;
 static uint8_t*  usbd_composite_CfgDesc = NULL;
 
 
+static int classes = 0;
+static USBD_ClassTypeDef *USBD_Classes[MAX_CLASSES];
+static void *USBD_Userdata[MAX_CLASSES];
+static void *USBD_Classdata[MAX_CLASSES];
+static void *USBD_Data[MAX_CLASSES];
+
 /**
   * @}
   */ 
@@ -207,12 +213,24 @@ static uint8_t usbd_composite_DeviceQualifierDesc[USB_LEN_DEV_QUALIFIER_DESC] =
 static uint8_t  usbd_composite_Init (USBD_HandleTypeDef *pdev, 
                                uint8_t cfgidx)
 {
-	printf("%s\r\n", __func__);
+	// printf("%s cfgidx: %d\r\n", __func__, cfgidx);
   uint8_t ret = 0;
-  
 
   return ret;
 }
+
+USBD_StatusTypeDef  USBD_COMPOSITE_RegisterClass(USBD_ClassTypeDef *pclass, void *fops)
+{
+  USBD_StatusTypeDef   status = USBD_OK;
+	USBD_Classes[classes] = pclass;
+	USBD_Classdata[classes] = NULL;
+	USBD_Userdata[classes] = fops;
+	USBD_Data[classes] = NULL;
+	classes++;
+	
+  return status;
+}
+
 
 /**
   * @brief  usbd_composite_Init
@@ -224,7 +242,7 @@ static uint8_t  usbd_composite_Init (USBD_HandleTypeDef *pdev,
 static uint8_t  usbd_composite_DeInit (USBD_HandleTypeDef *pdev, 
                                  uint8_t cfgidx)
 {
-	printf("%s\r\n", __func__);
+	// printf("%s cfgidx: %d\r\n", __func__, cfgidx);
 
   return USBD_OK;
 }
@@ -239,7 +257,7 @@ static uint8_t  usbd_composite_DeInit (USBD_HandleTypeDef *pdev,
 static uint8_t  usbd_composite_Setup (USBD_HandleTypeDef *pdev, 
                                 USBD_SetupReqTypedef *req)
 {
-	printf("%s\r\n", __func__);
+	// printf("%s\r\n", __func__);
  
   switch (req->bmRequest & USB_REQ_TYPE_MASK)
   {
@@ -274,7 +292,7 @@ static uint8_t  usbd_composite_Setup (USBD_HandleTypeDef *pdev,
   */
 static uint8_t  *usbd_composite_GetCfgDesc (uint16_t *length)
 {	
-	printf("%s\r\n", __func__);
+	// printf("%s\r\n", __func__);
 	if( usbd_composite_CfgDesc == NULL ){
 		uint8_t* ptr = NULL;
 		uint8_t* pCfg = NULL;
@@ -297,7 +315,7 @@ static uint8_t  *usbd_composite_GetCfgDesc (uint16_t *length)
 		memcpy(ptr, pCfg, size);
 		ptr+=size;
 		
-		printf("Length: %d Actual: %d\r\n", usbd_composite_CfgDesc_len, (ptr - usbd_composite_CfgDesc));
+		// printf("Length: %d Actual: %d\r\n", usbd_composite_CfgDesc_len, (ptr - usbd_composite_CfgDesc));
 		
 	}
 	
@@ -313,7 +331,6 @@ static uint8_t  *usbd_composite_GetCfgDesc (uint16_t *length)
 */
 uint8_t  *usbd_composite_DeviceQualifierDescriptor (uint16_t *length)
 {
-	printf("%s\r\n", __func__);
   *length = sizeof (usbd_composite_DeviceQualifierDesc);
   return usbd_composite_DeviceQualifierDesc;
 }
@@ -329,7 +346,7 @@ uint8_t  *usbd_composite_DeviceQualifierDescriptor (uint16_t *length)
 static uint8_t  usbd_composite_DataIn (USBD_HandleTypeDef *pdev, 
                               uint8_t epnum)
 {
-	printf("%s\r\n", __func__);
+	// printf("%s epnum: %d\r\n", __func__, epnum);
 
   return USBD_OK;
 }
@@ -342,7 +359,7 @@ static uint8_t  usbd_composite_DataIn (USBD_HandleTypeDef *pdev,
   */
 static uint8_t  usbd_composite_EP0_RxReady (USBD_HandleTypeDef *pdev)
 {
-	printf("%s\r\n", __func__);
+	// printf("%s\r\n", __func__);
 
   return USBD_OK;
 }
@@ -354,7 +371,7 @@ static uint8_t  usbd_composite_EP0_RxReady (USBD_HandleTypeDef *pdev)
   */
 static uint8_t  usbd_composite_EP0_TxReady (USBD_HandleTypeDef *pdev)
 {
-	printf("%s\r\n", __func__);
+	// printf("%s\r\n", __func__);
 
   return USBD_OK;
 }
@@ -367,7 +384,7 @@ static uint8_t  usbd_composite_EP0_TxReady (USBD_HandleTypeDef *pdev)
 static uint8_t  usbd_composite_SOF (USBD_HandleTypeDef *pdev)
 {
 
-	printf("%s\r\n", __func__);
+	// printf("%s\r\n", __func__);
   return USBD_OK;
 }
 /**
@@ -379,7 +396,7 @@ static uint8_t  usbd_composite_SOF (USBD_HandleTypeDef *pdev)
   */
 static uint8_t  usbd_composite_IsoINIncomplete (USBD_HandleTypeDef *pdev, uint8_t epnum)
 {
-	printf("%s\r\n", __func__);
+	// printf("%s epnum: %d\r\n", __func__, epnum);
 
   return USBD_OK;
 }
@@ -393,7 +410,7 @@ static uint8_t  usbd_composite_IsoINIncomplete (USBD_HandleTypeDef *pdev, uint8_
 static uint8_t  usbd_composite_IsoOutIncomplete (USBD_HandleTypeDef *pdev, uint8_t epnum)
 {
 
-	printf("%s\r\n", __func__);
+	// printf("%s epnum: %d\r\n", __func__, epnum);
   return USBD_OK;
 }
 /**
@@ -406,7 +423,7 @@ static uint8_t  usbd_composite_IsoOutIncomplete (USBD_HandleTypeDef *pdev, uint8
 static uint8_t  usbd_composite_DataOut (USBD_HandleTypeDef *pdev, 
                               uint8_t epnum)
 {
-	printf("%s\r\n", __func__);
+	// printf("%s epnum: %d\r\n", __func__, epnum);
 
   return USBD_OK;
 }
@@ -419,7 +436,6 @@ static uint8_t  usbd_composite_DataOut (USBD_HandleTypeDef *pdev,
 */
 uint8_t  *usbd_composite_GetDeviceQualifierDesc (uint16_t *length)
 {
-	printf("%s\r\n", __func__);
   *length = sizeof (usbd_composite_DeviceQualifierDesc);
   return usbd_composite_DeviceQualifierDesc;
 }

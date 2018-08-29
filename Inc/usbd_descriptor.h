@@ -24,8 +24,8 @@
   */
 
 /* Define to prevent recursive inclusion -------------------------------------*/ 
-#ifndef __USB_COMPOSITE_CORE_H
-#define __USB_COMPOSITE_CORE_H
+#ifndef __USB_DISCRIPTOR_CORE_H
+#define __USB_DISCRIPTOR_CORE_H
 
 #ifdef __cplusplus
  extern "C" {
@@ -52,8 +52,10 @@
 #define USBD_MSC_INTERFACE_IDX 0x00
 #define USBD_CDC_INTERFACE_IDX 0x01
 
-#define USB_COMPOSITE_CONFIG_DESC_SIZ       9
+#define USB_BASE_CONFIG_DESC_SIZ       9
 
+uint8_t  *usbd_builder_GetCfgDesc (uint16_t *length);
+	
 /**
   * @}
   */ 
@@ -67,8 +69,6 @@
   * @}
   */ 
 
-USBD_StatusTypeDef  USBD_COMPOSITE_RegisterClass(USBD_ClassTypeDef *pclass, void *fops);
-
 /** @defgroup USBD_CORE_Exported_Macros
   * @{
   */ 
@@ -81,7 +81,6 @@ USBD_StatusTypeDef  USBD_COMPOSITE_RegisterClass(USBD_ClassTypeDef *pclass, void
   * @{
   */ 
 
-extern USBD_ClassTypeDef  USBD_COMPOSITE;
 /**
   * @}
   */ 
@@ -97,7 +96,7 @@ extern USBD_ClassTypeDef  USBD_COMPOSITE;
 }
 #endif
 
-#endif  /* __USB_COMPOSITE_CORE_H */
+#endif  /* __USB_DISCRIPTOR_CORE_H */
 /**
   * @}
   */ 

@@ -67,6 +67,8 @@
 /* Includes ------------------------------------------------------------------*/
 #include "usbd_msc.h"
 
+#include "usbd_descriptor.h"
+
 
 /** @addtogroup STM32_USB_DEVICE_LIBRARY
   * @{
@@ -540,8 +542,9 @@ uint8_t  USBD_MSC_DataOut (USBD_HandleTypeDef *pdev,
 */
 uint8_t  *USBD_MSC_GetHSCfgDesc (uint16_t *length)
 {
-  *length = sizeof (USBD_MSC_CfgHSDesc);
-  return USBD_MSC_CfgHSDesc;
+	return usbd_builder_GetCfgDesc (length);
+  //*length = sizeof (USBD_MSC_CfgHSDesc);
+  //return USBD_MSC_CfgHSDesc;
 }
 
 uint8_t  *MSC_GetCfgDesc (uint16_t *length){

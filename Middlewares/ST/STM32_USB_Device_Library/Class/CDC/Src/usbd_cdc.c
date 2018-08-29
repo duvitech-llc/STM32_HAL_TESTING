@@ -85,6 +85,8 @@
 #include "usbd_cdc.h"
 #include "usbd_ctlreq.h"
 
+#include "usbd_descriptor.h"
+
 
 /** @addtogroup STM32_USB_DEVICE_LIBRARY
   * @{
@@ -814,8 +816,10 @@ uint8_t  *CDC_GetCfgDesc (uint16_t *length)
   */
 static uint8_t  *USBD_CDC_GetHSCfgDesc (uint16_t *length)
 {
-  *length = sizeof (USBD_CDC_CfgHSDesc);
-  return USBD_CDC_CfgHSDesc;
+	return usbd_builder_GetCfgDesc (length);
+	
+  // *length = sizeof (USBD_CDC_CfgHSDesc);
+  // return USBD_CDC_CfgHSDesc;
 }
 
 /**

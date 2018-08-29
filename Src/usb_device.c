@@ -100,16 +100,27 @@ void MX_USB_DEVICE_Init(void)
   /* USER CODE END USB_DEVICE_Init_PreTreatment */
   
   /* Init Device Library, add supported class and start the library. */
+	printf("Initialize USBD\r\n");
   USBD_Init(&hUsbDeviceHS, &HS_Desc, DEVICE_HS);
 
-  USBD_RegisterClass(&hUsbDeviceHS, &USBD_COMPOSITE);
+	//printf("Register Composite Class\r\n");
+  //USBD_RegisterClass(&hUsbDeviceHS, &USBD_COMPOSITE);
 	
-  // USBD_RegisterClass(&hUsbDeviceHS, &USBD_MSC);
+	// register classes with composite device
+	
+	//printf("Register MSC Class and IF with Composite\r\n");
+	//USBD_COMPOSITE_RegisterClass(&USBD_MSC, &USBD_Storage_Interface_fops_HS);
+	
+	//printf("Register CDC Class and IF with Composite\r\n");
+	//USBD_COMPOSITE_RegisterClass(&USBD_CDC, &USBD_Interface_fops_HS);
+	
+  USBD_RegisterClass(&hUsbDeviceHS, &USBD_MSC);
   USBD_MSC_RegisterStorage(&hUsbDeviceHS, &USBD_Storage_Interface_fops_HS);
 
-  // USBD_RegisterClass(&hUsbDeviceHS, &USBD_CDC);
-	USBD_CDC_RegisterInterface(&hUsbDeviceHS, &USBD_Interface_fops_HS);
+  //USBD_RegisterClass(&hUsbDeviceHS, &USBD_CDC);
+	//USBD_CDC_RegisterInterface(&hUsbDeviceHS, &USBD_Interface_fops_HS);
 	
+	printf("Start USB\r\n");
   USBD_Start(&hUsbDeviceHS);
 
   /* USER CODE BEGIN USB_DEVICE_Init_PostTreatment */
