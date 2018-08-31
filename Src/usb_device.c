@@ -103,19 +103,19 @@ void MX_USB_DEVICE_Init(void)
 	printf("Initialize USBD\r\n");
   USBD_Init(&hUsbDeviceHS, &HS_Desc, DEVICE_HS);
 
-	//printf("Register Composite Class\r\n");
-  //USBD_RegisterClass(&hUsbDeviceHS, &USBD_COMPOSITE);
+	printf("Register Composite Class\r\n");
+  USBD_RegisterClass(&hUsbDeviceHS, &USBD_COMPOSITE);
 	
 	// register classes with composite device
 	
-	//printf("Register MSC Class and IF with Composite\r\n");
-	//USBD_COMPOSITE_RegisterClass(&USBD_MSC, &USBD_Storage_Interface_fops_HS);
+	printf("Register MSC Class and IF with Composite\r\n");
+	USBD_COMPOSITE_RegisterClass(&USBD_MSC, &USBD_Storage_Interface_fops_HS);
 	
 	//printf("Register CDC Class and IF with Composite\r\n");
 	//USBD_COMPOSITE_RegisterClass(&USBD_CDC, &USBD_Interface_fops_HS);
 	
-  USBD_RegisterClass(&hUsbDeviceHS, &USBD_MSC);
-  USBD_MSC_RegisterStorage(&hUsbDeviceHS, &USBD_Storage_Interface_fops_HS);
+  //USBD_RegisterClass(&hUsbDeviceHS, &USBD_MSC);
+  //USBD_MSC_RegisterStorage(&hUsbDeviceHS, &USBD_Storage_Interface_fops_HS);
 
   //USBD_RegisterClass(&hUsbDeviceHS, &USBD_CDC);
 	//USBD_CDC_RegisterInterface(&hUsbDeviceHS, &USBD_Interface_fops_HS);

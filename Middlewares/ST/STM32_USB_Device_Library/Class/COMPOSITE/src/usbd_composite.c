@@ -122,12 +122,18 @@ static uint8_t  usbd_composite_IsoOutIncomplete (USBD_HandleTypeDef *pdev, uint8
 static uint16_t usbd_composite_CfgDesc_len = 0;
 static uint8_t*  usbd_composite_CfgDesc = NULL;
 
+typedef struct _USBD_DeviceHandleTypeDef
+{
+  USBD_SetupReqTypedef    request;
+  USBD_DescriptorsTypeDef *pDesc;
+  USBD_ClassTypeDef       *pClass;
+  void                    **pClassData;
+  void                    *pUserData;
+  void                    **pData;
+} CUSTOM_DeviceHandleTypeDef;
 
 static int classes = 0;
-static USBD_ClassTypeDef *USBD_Classes[MAX_CLASSES];
-static void *USBD_Userdata[MAX_CLASSES];
-static void *USBD_Classdata[MAX_CLASSES];
-static void *USBD_Data[MAX_CLASSES];
+CUSTOM_DeviceHandleTypeDef devices[MAX_CLASSES];
 
 /**
   * @}
@@ -213,19 +219,37 @@ static uint8_t usbd_composite_DeviceQualifierDesc[USB_LEN_DEV_QUALIFIER_DESC] =
 static uint8_t  usbd_composite_Init (USBD_HandleTypeDef *pdev, 
                                uint8_t cfgidx)
 {
-	// printf("%s cfgidx: %d\r\n", __func__, cfgidx);
+	printf("%s cfgidx: %d\r\n", __func__, cfgidx);
   uint8_t ret = 0;
-
+	for (int x = 0; x < classes; x++){
+		USBD_ClassTypeDef *pTemp = pdev->pClass;
+		void *pClassDataTemp = pdev->pClassData;
+		void *pUserDataTemp = pdev->pUserData;
+		
+		pdev->pClass = devices[x].pClass;
+		pdev->pClassData  = *devices[x].pClassData;
+		pdev->pUserData  = devices[x].pUserData;		
+		
+		printf("before address: 0x%08X\r\n", (uint32_t)*devices[x].pClassData);
+		
+		ret = pdev->pClass->Init(pdev, cfgidx);
+		
+		printf("address: 0x%08X\r\n", (uint32_t)*devices[x].pClassData);
+		pdev->pClass = pTemp;
+		pdev->pClassData = pClassDataTemp;
+		pdev->pUserData = pUserDataTemp;
+	}
+	
   return ret;
 }
 
 USBD_StatusTypeDef  USBD_COMPOSITE_RegisterClass(USBD_ClassTypeDef *pclass, void *fops)
 {
+	printf("%s\r\n", __func__);
   USBD_StatusTypeDef   status = USBD_OK;
-	USBD_Classes[classes] = pclass;
-	USBD_Classdata[classes] = NULL;
-	USBD_Userdata[classes] = fops;
-	USBD_Data[classes] = NULL;
+	devices[classes].pClass	= pclass;	
+	devices[classes].pClassData	= NULL;	
+	devices[classes].pUserData	= fops;	
 	classes++;
 	
   return status;
@@ -242,9 +266,27 @@ USBD_StatusTypeDef  USBD_COMPOSITE_RegisterClass(USBD_ClassTypeDef *pclass, void
 static uint8_t  usbd_composite_DeInit (USBD_HandleTypeDef *pdev, 
                                  uint8_t cfgidx)
 {
-	// printf("%s cfgidx: %d\r\n", __func__, cfgidx);
-
-  return USBD_OK;
+	printf("%s cfgidx: %d\r\n", __func__, cfgidx);
+  uint8_t ret = 0;
+	for (int x = 0; x < classes; x++){
+		USBD_ClassTypeDef *pTemp = pdev->pClass;
+		void *pClassDataTemp = pdev->pClassData;
+		void *pUserDataTemp = pdev->pUserData;
+		
+		pdev->pClass = devices[x].pClass;
+		pdev->pClassData  = devices[x].pClassData;
+		pdev->pUserData  = devices[x].pUserData;		
+		
+		printf("address: 0x%08X\r\n", (uint32_t)devices[x].pClassData);
+		ret = pdev->pClass->DeInit(pdev, cfgidx);
+		printf("address: 0x%08X\r\n", (uint32_t)devices[x].pClassData);
+		
+		pdev->pClass = pTemp;
+		pdev->pClassData = pClassDataTemp;
+		pdev->pUserData = pUserDataTemp;
+	}
+	
+  return ret;
 }
 
 /**
@@ -257,8 +299,24 @@ static uint8_t  usbd_composite_DeInit (USBD_HandleTypeDef *pdev,
 static uint8_t  usbd_composite_Setup (USBD_HandleTypeDef *pdev, 
                                 USBD_SetupReqTypedef *req)
 {
-	// printf("%s\r\n", __func__);
- 
+	printf("%s\r\n", __func__);
+	uint8_t ret = 0;
+	
+	USBD_ClassTypeDef *pTemp = pdev->pClass;
+	void *pClassDataTemp = pdev->pClassData;
+	void *pUserDataTemp = pdev->pUserData;
+	
+	pdev->pClass = devices[0].pClass;
+	pdev->pClassData  = devices[0].pClassData;
+	pdev->pUserData  = devices[0].pUserData;		
+	
+	ret = pdev->pClass->Setup(pdev, req);
+		
+	pdev->pClass = pTemp;
+	pdev->pClassData = pClassDataTemp;
+	pdev->pUserData = pUserDataTemp;
+
+/*
   switch (req->bmRequest & USB_REQ_TYPE_MASK)
   {
   case USB_REQ_TYPE_CLASS :  
@@ -280,7 +338,9 @@ static uint8_t  usbd_composite_Setup (USBD_HandleTypeDef *pdev,
       return USBD_FAIL;     
     }
   }
-  return USBD_OK;
+*/
+
+  return ret;
 }
 
 
@@ -315,7 +375,7 @@ static uint8_t  *usbd_composite_GetCfgDesc (uint16_t *length)
 		memcpy(ptr, pCfg, size);
 		ptr+=size;
 		
-		// printf("Length: %d Actual: %d\r\n", usbd_composite_CfgDesc_len, (ptr - usbd_composite_CfgDesc));
+		printf("Length: %d Actual: %d\r\n", usbd_composite_CfgDesc_len, (ptr - usbd_composite_CfgDesc));
 		
 	}
 	
@@ -346,9 +406,24 @@ uint8_t  *usbd_composite_DeviceQualifierDescriptor (uint16_t *length)
 static uint8_t  usbd_composite_DataIn (USBD_HandleTypeDef *pdev, 
                               uint8_t epnum)
 {
-	// printf("%s epnum: %d\r\n", __func__, epnum);
+	printf("%s epnum: %d\r\n", __func__, epnum);
 
-  return USBD_OK;
+	uint8_t ret = 0;
+	USBD_ClassTypeDef *pTemp = pdev->pClass;
+	void *pClassDataTemp = pdev->pClassData;
+	void *pUserDataTemp = pdev->pUserData;
+	
+	pdev->pClass = devices[0].pClass;
+	pdev->pClassData  = devices[0].pClassData;
+	pdev->pUserData  = devices[0].pUserData;		
+	
+	ret = pdev->pClass->DataOut(pdev, epnum);
+		
+	pdev->pClass = pTemp;
+	pdev->pClassData = pClassDataTemp;
+	pdev->pUserData = pUserDataTemp;
+	
+  return ret;
 }
 
 /**
@@ -359,7 +434,7 @@ static uint8_t  usbd_composite_DataIn (USBD_HandleTypeDef *pdev,
   */
 static uint8_t  usbd_composite_EP0_RxReady (USBD_HandleTypeDef *pdev)
 {
-	// printf("%s\r\n", __func__);
+	printf("%s\r\n", __func__);
 
   return USBD_OK;
 }
@@ -371,7 +446,7 @@ static uint8_t  usbd_composite_EP0_RxReady (USBD_HandleTypeDef *pdev)
   */
 static uint8_t  usbd_composite_EP0_TxReady (USBD_HandleTypeDef *pdev)
 {
-	// printf("%s\r\n", __func__);
+	printf("%s\r\n", __func__);
 
   return USBD_OK;
 }
@@ -423,9 +498,22 @@ static uint8_t  usbd_composite_IsoOutIncomplete (USBD_HandleTypeDef *pdev, uint8
 static uint8_t  usbd_composite_DataOut (USBD_HandleTypeDef *pdev, 
                               uint8_t epnum)
 {
-	// printf("%s epnum: %d\r\n", __func__, epnum);
-
-  return USBD_OK;
+	printf("%s epnum: %d\r\n", __func__, epnum);
+	uint8_t ret = 0;
+	USBD_ClassTypeDef *pTemp = pdev->pClass;
+	void *pClassDataTemp = pdev->pClassData;
+	void *pUserDataTemp = pdev->pUserData;
+	
+	pdev->pClass = devices[0].pClass;
+	pdev->pClassData  = devices[0].pClassData;
+	pdev->pUserData  = devices[0].pUserData;		
+	
+	ret = pdev->pClass->DataOut(pdev, epnum);
+		
+	pdev->pClass = pTemp;
+	pdev->pClassData = pClassDataTemp;
+	pdev->pUserData = pUserDataTemp;
+  return ret;
 }
 
 /**

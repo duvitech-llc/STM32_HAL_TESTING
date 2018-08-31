@@ -516,6 +516,7 @@ uint8_t  USBD_MSC_Setup (USBD_HandleTypeDef *pdev, USBD_SetupReqTypedef *req)
 uint8_t  USBD_MSC_DataIn (USBD_HandleTypeDef *pdev,
                               uint8_t epnum)
 {
+	printf("%s epnum: %d\r\n", __func__, epnum);
   MSC_BOT_DataIn(pdev , epnum);
   return USBD_OK;
 }
@@ -530,6 +531,7 @@ uint8_t  USBD_MSC_DataIn (USBD_HandleTypeDef *pdev,
 uint8_t  USBD_MSC_DataOut (USBD_HandleTypeDef *pdev,
                                uint8_t epnum)
 {
+	printf("%s epnum: %d\r\n", __func__, epnum);
   MSC_BOT_DataOut(pdev , epnum);
   return USBD_OK;
 }
